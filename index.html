@@ -504,71 +504,74 @@ function extractText(raw) {
 function normaliseText(text) {
   if (!text) return '';
   let t = text
-    .replace(/\\ n/g, '\n')   // "\ n" with space
+    .replace(/\\ n/g, '\n')   // "\ n" with space variant
     .replace(/\\n/g,  '\n')   // "\n" standard
     .replace(/\\t/g,  ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
-  // ── Fix spurious mid-word spaces inserted by the TTS/LLM tokeniser ──
-  // Pattern: single letter(s) separated by a space from the rest of a word
-  // e.g. "Ind us Ind" → "IndusInd",  "Pro actively" → "Proactively"
-  // "Apolog ies" → "Apologies",  "Conf ident" → "Confident"
-  // Strategy: if a space-separated token is ≤3 chars and surrounded by word chars,
-  // and both neighbours are lowercase or the token is lowercase, merge them.
-  // Run multiple passes to catch chains like "a b c def"
-  for (let pass = 0; pass < 4; pass++) {
-    t = t.replace(/([A-Za-z]{2,})\s([a-z]{1,4})(?=\s[a-z]|\s[A-Z]|[^a-zA-Z]|$)/g, (m, a, b) => {
-      // Don't merge if b looks like a standalone word (common short words)
-      const stopWords = new Set(['a','an','the','in','on','at','to','of','or','is','it','as','be','by','we','he','she','i','do','so','no','up','if','my','me','us','go','mr','ms','dr','hr','id']);
-      if (stopWords.has(b.toLowerCase())) return m;
-      return a + b;
-    });
-    // Also handle: "a B" where the space is between two parts of a proper noun
-    // "Ind us Ind" → after first pass "Indus Ind" → second pass "IndusInd"
-    t = t.replace(/([A-Z][a-z]+)\s([a-z]{1,3})(?=[A-Z])/g, '$1$2');
-  }
-
-  // Specific known bank/domain terms that get split
+  // ── Fix only KNOWN specific splits from the Kore TTS tokeniser ──
+  // Do NOT use aggressive algorithmic merging — it over-merges normal words
   const fixes = [
-    [/Ind\s*us\s*Ind\b/g,      'IndusInd'],
-    [/\bApolog\s*i?es?\b/gi,   'Apologies'],
-    [/\bApolog\s*ize\b/gi,     'Apologize'],
-    [/\bPro\s*actively\b/gi,   'Proactively'],
-    [/\bCon\s*fident\b/gi,     'Confident'],
-    [/\bConf\s*ident(?:ly)?\b/gi, 'Confidently'],
-    [/\bPro\s*fessional(?:ly)?\b/gi, 'Professionally'],
-    [/\bStr\s*ategic(?:ally)?\b/gi,  'Strategically'],
-    [/\bSitu\s*ation(?:al)?\b/gi,    'Situational'],
-    [/\bOrgan\s*iz(?:e|ation)?\b/gi, w => w.replace(/\s/g,'')],
-    [/\bPublic\s*ly\b/gi,      'Publicly'],
-    [/\bCom\s*mun\s*icate?\b/gi, 'Communicate'],
-    [/\bEsc\s*alat(?:e|ion)?\b/gi, w => w.replace(/\s/g,'')],
-    [/\bRec\s*omm?end\b/gi,    'Recommend'],
-    [/\bCollect\s*ively\b/gi,  'Collectively'],
-    [/\bDiscreet\s*ly\b/gi,    'Discreetly'],
-    [/\bFlu\s*ctu\s*ation\b/gi,'Fluctuation'],
-    [/\bCatch\s*ment\b/gi,     'Catchment'],
-    [/\bunder\s*per\s*form\b/gi, 'underperform'],
-    [/\bUnder\s*Per\s*form\b/gi,'Underperform'],
-    [/\bMis\s*-?\s*s(?:ell|old)\b/gi, w => w.replace(/\s/g,'')],
-    [/\bHel\s*p\s*line\b/gi,   'Helpline'],
-    [/\bNPS\s+Score\b/g,        'NPS Score'],
-    [/\bN\s*PS\b/g,             'NPS'],
-    [/\bW\s+ishing\b/gi,        'Wishing'],
-    [/\bW\s+ish\b/gi,           'Wish'],
-    [/\bBl\s*ame\b/gi,          'Blame'],
-    [/\bAn\s*aly\s*z(?:e|ing)\b/gi, w => w.replace(/\s/g,'')],
-    [/\bIm\s*prove\b/gi,        'Improve'],
-    [/\bPer\s*form\b/gi,        'Perform'],
-    [/\bAssess\s*ment\b/gi,     'Assessment'],
-    [/\bman\s*age\s*ment\b/gi,  'management'],
-    [/\bpros\s*pect\s*ing\b/gi, 'prospecting'],
-    [/\bIntens\s*ify\b/gi,      'Intensify'],
-    [/\bPot\s*ential\b/gi,      'Potential'],
-    [/\bOut\s*per\s*form\b/gi,  'Outperform'],
-    [/\bProm\s*oter\b/gi,       'Promoter'],
+    // Bank / brand name
+    [/Ind\s+us\s+Ind/g,           'IndusInd'],
+    [/Ind\s*usInd/g,              'IndusInd'],
+    // Common politeness words
+    [/Apolog\s+ies\b/gi,          'Apologies'],
+    [/Apolog\s+ize\b/gi,          'Apologize'],
+    [/Apolog\s+ized\b/gi,         'Apologized'],
+    [/Congrat\s+ulations\b/gi,    'Congratulations'],
+    [/Thank\s+ful\b/gi,           'Thankful'],
+    // Adverbs / adjectives
+    [/Pro\s+actively\b/gi,        'Proactively'],
+    [/Pro\s+active\b/gi,          'Proactive'],
+    [/Pro\s+fessional(?:ly)?\b/gi,'Professionally'],
+    [/Conf\s+ident(?:ly)?\b/gi,   'Confidently'],
+    [/Con\s+fident(?:ly)?\b/gi,   'Confidently'],
+    [/Public\s+ly\b/gi,           'Publicly'],
+    [/Collect\s+ively\b/gi,       'Collectively'],
+    [/Discreet\s+ly\b/gi,         'Discreetly'],
+    [/Direct\s+ly\b/gi,           'Directly'],
+    [/Effect\s+ively\b/gi,        'Effectively'],
+    [/Respect\s+fully\b/gi,       'Respectfully'],
+    [/Immedi\s+ately\b/gi,        'Immediately'],
+    // Domain terms
+    [/Catch\s+ment\b/gi,          'Catchment'],
+    [/Pros\s+pect\s+ing\b/gi,     'Prospecting'],
+    [/Intens\s+ify\b/gi,          'Intensify'],
+    [/Flu\s+ctu\s*ation\b/gi,     'Fluctuation'],
+    [/Help\s+line\b/gi,           'Helpline'],
+    [/under\s+per\s+form/gi,      'underperform'],
+    [/under\s+performing\b/gi,    'underperforming'],
+    [/Mis\s+sell(?:ing)?\b/gi,    'Misselling'],
+    [/Mis\s+sold\b/gi,            'Missold'],
+    [/Assess\s+ment\b/gi,         'Assessment'],
+    [/Achieve\s+ment\b/gi,        'Achievement'],
+    [/Manage\s+ment\b/gi,         'Management'],
+    [/Develop\s+ment\b/gi,        'Development'],
+    [/Im\s+prove(?:ment)?\b/gi,   w => w.replace(/\s/g,'')],
+    [/Esc\s+alat(?:e|ion)\b/gi,   w => w.replace(/\s/g,'')],
+    [/Rec\s+ommend\b/gi,          'Recommend'],
+    [/Organ\s+iz(?:e|ation)\b/gi, w => w.replace(/\s/g,'')],
+    [/Commun\s+icat/gi,           'Communicat'],
+    [/Strat\s+egy\b/gi,           'Strategy'],
+    [/Strat\s+egic\b/gi,          'Strategic'],
+    [/Situ\s+ation\b/gi,          'Situation'],
+    [/Prom\s+oter\b/gi,           'Promoter'],
+    [/\bN\s+PS\b/g,               'NPS'],
+    [/\bW\s+ishing\b/gi,          'Wishing'],
+    [/\bW\s+ish\b/gi,             'Wish'],
+    [/\bBl\s+ame\b/gi,            'Blame'],
+    [/Anal\s+ysis\b/gi,           'Analysis'],
+    [/Analyz\s+ing\b/gi,          'Analyzing'],
+    [/Pot\s+ential\b/gi,          'Potential'],
+    [/Out\s+perform\b/gi,         'Outperform'],
+    [/Perform\s+ance\b/gi,        'Performance'],
+    // Score-related (prevent "Congratulations" from being split during detection)
+    [/Congrat\s+ulation/gi,       'Congratulation'],
+    [/Scor\s+ed\b/gi,             'Scored'],
   ];
+
   for (const [re, rep] of fixes) {
     t = typeof rep === 'function' ? t.replace(re, rep) : t.replace(re, rep);
   }
@@ -675,10 +678,11 @@ function isRole(t) {
 
 function isScore(t) {
   return /you scored\s+\d+\s*%/i.test(t)
-    || /(?:fit score|motivational.*score|overall.*score)\s+(?:is\s+)?\d+\s*%/i.test(t)
-    || /\d+\s*%.*(?:good fit|strong fit|great fit|promising)/i.test(t)
-    || /scored\s+\d+\s*%.*(?:assessment|role|position|strong|good)/i.test(t)
-    || /congratulations.*scored\s+\d+\s*%/i.test(t);
+    || /(?:fit score|motivational.*score|overall.*score|assessment.*score)\s+(?:is\s+)?\d+\s*%/i.test(t)
+    || /\d+\s*%.*(?:good fit|strong fit|great fit|promising fit)/i.test(t)
+    || /(?:scored|score of)\s+\d+\s*%/i.test(t)
+    || /congratulations[^.]*\d+\s*%/i.test(t)
+    || /\d+\s*%.*(?:showing a strong|showing a good|indicating a)/i.test(t);
 }
 
 function isConfirmation(t) {
@@ -1223,93 +1227,123 @@ $input.addEventListener('input',resize);
 
 /* ══════════════════════════════════════════
    CV UPLOAD
-   Uploads to 0x0.st (free public file host)
-   → gets back a public URL
-   → sends URL to Kore agent
+   Tries multiple CORS-friendly file hosts:
+   1. file.io  (returns JSON {link})
+   2. tmpfiles.org  (returns JSON {url})
+   3. Base64 embed fallback — reads file
+      locally and sends content to agent
 ══════════════════════════════════════════ */
 document.getElementById('cv-file').addEventListener('change', async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
-
-  // Reset input so same file can be re-uploaded
-  e.target.value = '';
+  e.target.value = ''; // reset so same file can be re-selected
 
   const MAX_MB = 10;
   if (file.size > MAX_MB * 1024 * 1024) {
-    sysNotice(`⚠ File too large (max ${MAX_MB}MB)`);
-    return;
+    sysNotice(`⚠ File too large (max ${MAX_MB}MB)`); return;
   }
 
-  // Show uploading pill in chat
+  // Show uploading pill
   const pill = document.createElement('div');
   pill.className = 'cv-pill';
-  pill.innerHTML = `
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-    </svg>
-    <span>Uploading <strong>${file.name}</strong>…</span>`;
+  pill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Uploading <strong>${file.name}</strong>…</span>`;
   $chat.appendChild(pill); scrollEnd();
 
   const $cvBtn = document.getElementById('cv-btn');
   $cvBtn.disabled = true;
 
+  let cvUrl = null;
+  let uploadMethod = '';
+
+  // ── Try file.io ──
   try {
-    // Upload to 0x0.st — free anonymous file host, returns URL as plain text
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const uploadRes = await fetch('https://0x0.st', {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!uploadRes.ok) throw new Error(`Upload failed: HTTP ${uploadRes.status}`);
-
-    const cvUrl = (await uploadRes.text()).trim();
-    if (!cvUrl.startsWith('http')) throw new Error('Invalid URL returned from upload service');
-
-    // Update pill to show success
-    pill.innerHTML = `
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span><strong>${file.name}</strong> uploaded · <a href="${cvUrl}" target="_blank" style="color:var(--teal);text-decoration:underline">View</a></span>`;
-
-    // Store in state for reference
-    S.cvUrl = cvUrl;
-    S.cvName = file.name;
-
-    // Send URL to agent as a user message
-    const msg = `I have uploaded my CV. Here is the link: ${cvUrl} (File: ${file.name})`;
-    userBubble(`📄 CV uploaded: ${file.name}`);
-    // Send to agent without showing another userBubble
-    lock(); setStatus('thinking'); addTyping();
-    try {
-      const resp = await callAgent(msg);
-      removeTyping();
-      if (resp) parseAndRender(resp);
-    } catch(err) {
-      removeTyping();
-      botBubble('accent-gold').finalize(`⚠️ ${err.message}`);
-      setStatus('error');
-    } finally {
-      setStatus('ready'); unlock();
+    const fd = new FormData(); fd.append('file', file);
+    const r = await fetch('https://file.io/?expires=1d', { method:'POST', body:fd });
+    if (r.ok) {
+      const j = await r.json();
+      if (j?.link) { cvUrl = j.link; uploadMethod = 'file.io'; }
     }
+  } catch(e) { console.warn('[file.io]', e.message); }
 
-  } catch(err) {
-    console.error('[CV Upload]', err);
-    pill.innerHTML = `
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D44B4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <span style="color:#D44B4E">Upload failed: ${err.message}</span>`;
-    // Fallback: ask user to paste URL manually
-    sysNotice('Tip: paste your CV link directly in the chat if upload fails');
-  } finally {
-    $cvBtn.disabled = false;
+  // ── Try tmpfiles.org ──
+  if (!cvUrl) {
+    try {
+      const fd = new FormData(); fd.append('file', file);
+      const r = await fetch('https://tmpfiles.org/api/v1/upload', { method:'POST', body:fd });
+      if (r.ok) {
+        const j = await r.json();
+        // tmpfiles returns {"status":"success","data":{"url":"https://tmpfiles.org/XXXX/file.pdf"}}
+        const raw = j?.data?.url || j?.url;
+        if (raw) { cvUrl = raw.replace('tmpfiles.org/', 'tmpfiles.org/dl/'); uploadMethod = 'tmpfiles.org'; }
+      }
+    } catch(e) { console.warn('[tmpfiles.org]', e.message); }
   }
+
+  // ── Base64 fallback: read file locally ──
+  // For PDFs/DOC the agent can't read binary directly, but we can
+  // send the filename + first 2000 chars of text-readable content
+  if (!cvUrl) {
+    try {
+      const text = await readFileAsText(file);
+      const excerpt = text.slice(0, 3000).trim();
+      S.cvText = excerpt;
+      uploadMethod = 'local-read';
+    } catch(e) { console.warn('[local read]', e.message); }
+  }
+
+  const $cvBtn2 = document.getElementById('cv-btn');
+
+  if (cvUrl) {
+    // Success — update pill
+    S.cvUrl  = cvUrl;
+    S.cvName = file.name;
+    pill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span><strong>${file.name}</strong> ready · <a href="${cvUrl}" target="_blank" style="color:var(--teal);text-decoration:underline">View</a></span>`;
+
+    const msg = `I have uploaded my CV/Resume. File: "${file.name}". Download link: ${cvUrl}. Please analyse this resume and suggest the most suitable open internal roles for me.`;
+    userBubble(`📄 CV uploaded: ${file.name}`);
+    await sendToAgent(msg);
+
+  } else if (S.cvText) {
+    // Text fallback
+    S.cvName = file.name;
+    pill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span><strong>${file.name}</strong> read locally</span>`;
+
+    const msg = `I am sharing my CV/Resume content below. File: "${file.name}".\n\n${S.cvText}\n\nPlease analyse this and suggest the most suitable open internal roles for me.`;
+    userBubble(`📄 CV shared: ${file.name}`);
+    await sendToAgent(msg);
+
+  } else {
+    pill.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D44B4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span style="color:#D44B4E">Upload failed — paste your CV content or a public link in the chat</span>`;
+  }
+
+  $cvBtn2.disabled = false;
 });
+
+// Read file as plain text (works for .txt, partially for .pdf)
+function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = e => resolve(e.target.result || '');
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsText(file);
+  });
+}
+
+// Shared agent call used by CV upload (no duplicate userBubble)
+async function sendToAgent(msg) {
+  lock(); setStatus('thinking'); addTyping();
+  try {
+    const resp = await callAgent(msg);
+    removeTyping();
+    if (resp) parseAndRender(resp);
+  } catch(err) {
+    removeTyping();
+    botBubble('accent-gold').finalize(`⚠️ ${err.message}`);
+    setStatus('error');
+  } finally {
+    setStatus('ready'); unlock();
+  }
+}
 
 /* ══════════════════════════════════════════
    INIT
