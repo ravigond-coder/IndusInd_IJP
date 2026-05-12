@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Take Your Leap · IJP Career Bot · IndusInd Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --flame:        #E8621A;          /* orange CTA */
+  --flame-light:  #F07830;
+  --flame-glow:   rgba(232,98,26,0.3);
+  --teal:         #00C2A8;          /* teal accent */
+  --teal-glow:    rgba(0,194,168,0.2);
+  --violet:       #7C5CBF;          /* purple quiz */
+  --gold:         #F0A500;
+  --navy:         #0D1520;          /* deep navy bg — matches screenshot 3 */
+  --navy-card:    #131E30;
+  --navy-light:   #1A2840;
+  --navy-border:  #1E2D45;
+  --t1:           #EEF2F7;
+  --t2:           #8BA0BC;
+  --t3:           #4A6080;
+  --chip-bg:      #151F30;
+  --chip-border:  #1E2D45;
+  --bot-bubble:   #111A28;
+  --scrollbar:    #1A2840;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { height:100%; height:100dvh; overflow:hidden; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--navy); color:var(--t1);
+  display:flex; flex-direction:column;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 80% 10%,rgba(152,39,42,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 80%,rgba(200,146,42,0.06) 0%,transparent 60%);
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  flex-shrink:0; display:flex; align-items:center; gap:12px;
+  padding:14px 20px;
+  background:rgba(14,14,20,0.94);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--navy-border);
+  position:sticky; top:0; z-index:100;
+}
+.logo-mark {
+  width:36px; height:36px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--flame),var(--flame-light));
+  border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 0 16px var(--flame-glow);
+}
+.topbar-title { flex:1; }
+.topbar-title h1 {
+  font-family:'Instrument Serif',serif; font-size:16px; font-weight:400;
+  color:var(--t1); letter-spacing:0.01em; line-height:1.2;
+}
+.topbar-title span {
+  font-size:11px; color:var(--t3); font-weight:400;
+  letter-spacing:0.05em; text-transform:uppercase;
+}
+.progress-bar { display:flex; align-items:center; gap:3px; }
+.progress-pill {
+  height:4px; width:18px; border-radius:2px;
+  background:var(--navy-border); transition:all 0.4s;
+}
+.progress-pill.done { background:var(--teal); }
+.progress-pill.active { background:var(--flame); width:26px; box-shadow:0 0 6px var(--flame-glow); }
+.status-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--teal); flex-shrink:0;
+  animation:pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%   { box-shadow:0 0 0 0   rgba(200,146,42,0.5); }
+  70%  { box-shadow:0 0 0 6px rgba(200,146,42,0); }
+  100% { box-shadow:0 0 0 0   rgba(200,146,42,0); }
+}
+
+/* ── CHAT ── */
+.chat-area {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:18px 16px 8px; display:flex; flex-direction:column; gap:12px;
+  scroll-behavior:smooth;
+}
+.chat-area::-webkit-scrollbar { width:4px; }
+.chat-area::-webkit-scrollbar-thumb { background:var(--scrollbar); border-radius:2px; }
+
+/* ── MESSAGES ── */
+.message { display:flex; gap:10px; max-width:90%; animation:msg-in 0.28s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes msg-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.message.bot  { align-self:flex-start; }
+.message.user { align-self:flex-end; flex-direction:row-reverse; }
+.bot-avatar {
+  width:28px; height:28px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--flame),var(--flame-light));
+  border-radius:7px; display:flex; align-items:center; justify-content:center;
+  font-size:13px; margin-top:2px;
+}
+.bubble {
+  padding:11px 14px; font-size:14px; line-height:1.58;
+  word-break:break-word; word-spacing:normal; letter-spacing:normal;
+}
+.bot .bubble {
+  background:var(--bot-bubble);
+  border:1px solid var(--navy-border);
+  border-left:3px solid var(--teal);
+  border-radius:3px 16px 16px 16px; color:var(--t1);
+}
+.bot .bubble.accent-flame  { border-left-color:var(--flame); }
+.bot .bubble.accent-violet { border-left-color:var(--violet); }
+.bot .bubble.accent-gold   { border-left-color:var(--gold); }
+.user .bubble {
+  background:rgba(152,39,42,0.12);
+  border:1px solid rgba(152,39,42,0.3);
+  border-radius:16px 3px 16px 16px; color:var(--t1);
+}
+.bubble p  { margin-bottom:5px; }
+.bubble p:last-child { margin-bottom:0; }
+.bubble ul,.bubble ol { padding-left:18px; margin:4px 0; }
+.bubble li { margin:2px 0; }
+.bubble strong { font-weight:700; }
+.bubble em     { font-style:italic; }
+.bubble code   { font-family:monospace; background:rgba(200,146,42,0.1); border:1px solid rgba(200,146,42,0.2); border-radius:3px; padding:1px 5px; font-size:12.5px; }
+
+/* streaming cursor */
+.streaming::after { content:'▋'; animation:blink 0.7s infinite; color:var(--teal); margin-left:1px; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── TYPING ── */
+.typing-row { display:flex; gap:10px; align-self:flex-start; animation:msg-in 0.22s ease both; }
+.typing-bbl {
+  background:var(--bot-bubble); border:1px solid var(--navy-border);
+  border-left:3px solid var(--teal); border-radius:3px 16px 16px 16px;
+  padding:12px 16px; display:flex; gap:5px; align-items:center;
+}
+.typing-dot {
+  width:6px; height:6px; background:var(--teal); border-radius:50%;
+  animation:td 1.1s infinite ease-in-out; opacity:0.4;
+}
+.typing-dot:nth-child(2) { animation-delay:0.17s; }
+.typing-dot:nth-child(3) { animation-delay:0.34s; }
+@keyframes td { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
+
+/* ── QUICK REPLY CHIPS ── */
+.quick-replies { display:flex; flex-wrap:wrap; gap:8px; padding:2px 0 2px 38px; animation:msg-in 0.28s 0.05s cubic-bezier(0.34,1.56,0.64,1) both; }
+.chip {
+  padding:8px 15px; min-height:40px; border-radius:22px;
+  border:1px solid var(--chip-border); background:var(--chip-bg);
+  color:var(--t1); font-family:'DM Sans',sans-serif;
+  font-size:13px; font-weight:500; cursor:pointer; line-height:1;
+  transition:all 0.15s;
+}
+.chip:hover { border-color:var(--teal); color:var(--teal); background:rgba(200,146,42,0.07); transform:translateY(-1px); }
+
+/* ── ROLE CARDS ── */
+.role-cards-wrapper { padding:2px 0 2px 38px; display:flex; flex-direction:column; gap:9px; animation:msg-in 0.28s 0.05s cubic-bezier(0.34,1.56,0.64,1) both; }
+.role-card { background:var(--navy-card); border:1px solid var(--navy-border); border-radius:12px; overflow:hidden; transition:all 0.18s; }
+.role-card:hover { border-color:rgba(200,146,42,0.3); transform:translateY(-1px); }
+.role-card.selected { border-color:var(--teal); }
+.role-card-top { height:3px; }
+.role-card-body { padding:11px 13px; }
+.role-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:5px; }
+.role-title { font-family:'Instrument Serif',serif; font-size:15px; font-weight:400; color:var(--t1); line-height:1.3; }
+.match-badge { background:rgba(200,146,42,0.12); border:1px solid rgba(200,146,42,0.3); color:var(--teal); font-size:11px; font-weight:700; padding:3px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+.match-badge.open { background:rgba(107,58,125,0.12); border-color:rgba(107,58,125,0.3); color:var(--violet); }
+.role-meta { font-size:12px; color:var(--t3); margin-bottom:9px; line-height:1.4; }
+.role-actions { display:flex; gap:7px; }
+.btn-watch { padding:6px 11px; background:transparent; border:1px solid var(--navy-border); color:var(--t2); border-radius:7px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.15s; min-height:32px; }
+.btn-watch:hover { border-color:var(--t2); color:var(--t1); }
+.btn-interested { padding:6px 13px; background:rgba(152,39,42,0.1); border:1px solid rgba(152,39,42,0.3); color:#D44B4E; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; min-height:32px; }
+.btn-interested:hover { background:rgba(152,39,42,0.18); }
+
+/* ── SKILL CHIPS ── */
+.skill-chips-wrapper { padding:2px 0 2px 38px; animation:msg-in 0.28s 0.05s cubic-bezier(0.34,1.56,0.64,1) both; }
+.skill-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.skill-chip { padding:8px 14px; min-height:40px; border-radius:22px; border:1px solid var(--chip-border); background:var(--chip-bg); color:var(--t2); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.15s; user-select:none; }
+.skill-chip:hover { border-color:var(--teal); color:var(--t1); }
+.skill-chip.selected { background:rgba(200,146,42,0.12); border-color:var(--teal); color:var(--teal); }
+.continue-btn { padding:9px 20px; background:var(--flame); color:#fff; border:none; border-radius:20px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; opacity:0.35; pointer-events:none; transition:all 0.2s; }
+.continue-btn.active { opacity:1; pointer-events:all; box-shadow:0 4px 14px var(--flame-glow); }
+.continue-btn.active:hover { background:var(--flame-light); transform:translateY(-1px); }
+
+/* ── QUIZ ── */
+.quiz-wrapper { padding:2px 0 2px 38px; animation:msg-in 0.28s 0.05s cubic-bezier(0.34,1.56,0.64,1) both; }
+.quiz-card { background:var(--navy-card); border:1px solid var(--navy-border); border-radius:12px; overflow:hidden; }
+.quiz-header { padding:9px 13px; background:rgba(107,58,125,0.1); border-bottom:1px solid var(--navy-border); font-size:10.5px; font-weight:700; color:var(--violet); letter-spacing:0.06em; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; }
+.quiz-pips { display:flex; gap:3px; }
+.quiz-pip { width:15px; height:3px; border-radius:2px; background:var(--navy-border); transition:background 0.3s; }
+.quiz-pip.done { background:var(--teal); }
+.quiz-pip.active { background:var(--violet); }
+.quiz-body { padding:13px; }
+.quiz-question { font-size:14px; color:var(--t1); line-height:1.5; margin-bottom:11px; font-weight:500; }
+.quiz-options { display:flex; flex-direction:column; gap:7px; margin-bottom:12px; }
+.quiz-option { padding:9px 12px; border:1px solid var(--chip-border); border-radius:8px; background:var(--chip-bg); color:var(--t2); font-family:'DM Sans',sans-serif; font-size:13px; cursor:pointer; transition:all 0.15s; text-align:left; line-height:1.4; display:flex; align-items:flex-start; gap:8px; min-height:44px; }
+.quiz-option:hover { border-color:var(--violet); color:var(--t1); }
+.quiz-option.selected { background:rgba(107,58,125,0.1); border-color:var(--violet); color:var(--t1); }
+.option-letter { width:20px; height:20px; border-radius:50%; border:1px solid var(--navy-border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; color:var(--t3); transition:all 0.15s; }
+.quiz-option.selected .option-letter { background:var(--violet); border-color:var(--violet); color:#fff; }
+.quiz-nav { display:flex; justify-content:space-between; align-items:center; }
+.btn-quiz-nav { padding:8px 15px; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; border:1px solid var(--navy-border); background:transparent; color:var(--t2); }
+.btn-quiz-nav:hover:not(:disabled) { color:var(--t1); border-color:var(--t2); }
+.btn-quiz-nav:disabled { opacity:0.3; cursor:not-allowed; }
+.btn-quiz-next { background:var(--violet); color:#fff; border-color:var(--violet); opacity:0.35; pointer-events:none; }
+.btn-quiz-next.active { opacity:1; pointer-events:all; }
+.btn-quiz-next.active:hover { background:#7B50A0; }
+
+/* ── FIT SCORE ── */
+.fit-score-wrapper { padding:2px 0 2px 38px; animation:msg-in 0.28s 0.05s cubic-bezier(0.34,1.56,0.64,1) both; }
+.fit-score-card { background:var(--navy-card); border:1px solid var(--navy-border); border-radius:14px; padding:18px; }
+.score-ring-container { display:flex; align-items:center; gap:18px; margin-bottom:14px; }
+.score-label-group { flex:1; }
+.score-number { font-family:'Instrument Serif',serif; font-size:40px; font-weight:400; color:var(--teal); line-height:1; margin-bottom:3px; }
+.score-label { font-size:13px; font-weight:600; color:var(--teal); margin-bottom:2px; }
+.score-role { font-size:11.5px; color:var(--t3); }
+.trait-bars { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+.trait-row { display:flex; align-items:center; gap:9px; }
+.trait-name { font-size:12px; color:var(--t2); width:115px; flex-shrink:0; }
+.trait-track { flex:1; height:5px; background:var(--navy-border); border-radius:3px; overflow:hidden; }
+.trait-fill { height:100%; border-radius:3px; width:0; transition:width 1.1s cubic-bezier(0.4,0,0.2,1); }
+.trait-pct { font-size:12px; font-weight:600; width:32px; text-align:right; flex-shrink:0; }
+.btn-submit-profile { width:100%; padding:13px; background:var(--flame); color:#fff; border:none; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 18px var(--flame-glow); transition:all 0.2s; }
+.btn-submit-profile:hover:not(:disabled) { background:var(--flame-light); transform:translateY(-1px); }
+.btn-submit-profile:disabled { background:var(--t3); cursor:not-allowed; box-shadow:none; transform:none; }
+
+/* ── CONFIRM CARD ── */
+.confirm-card { margin-left:38px; background:var(--navy-card); border:1px solid var(--navy-border); border-radius:11px; padding:13px; font-size:13px; color:var(--t2); line-height:1.65; animation:msg-in 0.28s 0.1s cubic-bezier(0.34,1.56,0.64,1) both; }
+.confirm-card strong { color:var(--t1); font-weight:600; }
+.confirm-card .ref { color:var(--teal); font-weight:600; }
+
+/* ── INELIG CARD ── */
+.inelig-card { margin-left:38px; background:var(--navy-card); border:1px solid rgba(152,39,42,0.3); border-radius:11px; padding:13px; animation:msg-in 0.28s 0.1s cubic-bezier(0.34,1.56,0.64,1) both; }
+.inelig-rows { display:flex; flex-direction:column; gap:6px; }
+.inelig-row { display:flex; align-items:center; gap:7px; font-size:12.5px; }
+.inelig-row.fail .inelig-text { color:#D44B4E; }
+.inelig-text { color:var(--t2); }
+
+/* ── INPUT ── */
+.input-area { flex-shrink:0; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid var(--navy-border); background:rgba(14,14,20,0.96); backdrop-filter:blur(12px); }
+.input-row { display:flex; gap:9px; align-items:flex-end; background:var(--navy-card); border:1px solid var(--navy-border); border-radius:14px; padding:9px 10px; transition:border-color 0.2s; }
+.input-row:focus-within { border-color:rgba(0,194,168,0.4); }
+#chat-input { flex:1; background:transparent; border:none; outline:none; color:var(--t1); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.45; resize:none; max-height:100px; overflow-y:auto; padding:0; }
+#chat-input::placeholder { color:var(--t3); }
+#chat-input:disabled { color:var(--t3); cursor:not-allowed; }
+.send-btn { width:34px; height:34px; flex-shrink:0; background:var(--flame); border:none; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 10px var(--flame-glow); transition:all 0.15s; }
+.send-btn:hover:not(:disabled) { background:var(--flame-light); transform:scale(1.05); }
+.send-btn:disabled { background:var(--t3); cursor:not-allowed; box-shadow:none; }
+.send-btn svg { stroke:#fff; }
+
+/* CV upload button */
+.cv-btn {
+  width:34px; height:34px; flex-shrink:0;
+  background:transparent;
+  border:1px solid var(--navy-border);
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.15s; color:var(--t2);
+  position:relative;
+}
+.cv-btn:hover { border-color:var(--teal); color:var(--teal); background:rgba(0,194,168,0.07); }
+.cv-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.cv-btn input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.cv-pill {
+  align-self:flex-start; margin-left:38px;
+  display:flex; align-items:center; gap:7px;
+  padding:6px 12px;
+  background:rgba(0,194,168,0.08);
+  border:1px solid rgba(0,194,168,0.25);
+  border-radius:20px;
+  font-size:12px; color:var(--teal);
+  animation:msg-in 0.25s ease both;
+}
+.cv-pill svg { flex-shrink:0; }
+@keyframes check-spin { to { transform:rotate(360deg); } }
+.check-spin { animation:check-spin 0.8s linear infinite; display:inline-block; }
+
+/* ── SYSTEM NOTICE ── */
+.sys-notice { align-self:center; font-size:11px; color:var(--t3); padding:4px 10px; border:1px solid var(--navy-border); border-radius:20px; background:var(--navy-card); animation:msg-in 0.2s ease both; }
+
+/* ── DESKTOP ── */
+@media(min-width:520px){
+  body { align-items:center; background-image:radial-gradient(ellipse 80% 60% at 70% 5%,rgba(152,39,42,0.09) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 5% 90%,rgba(200,146,42,0.07) 0%,transparent 60%); }
+  .chat-shell { width:460px; height:100dvh; display:flex; flex-direction:column; border-left:1px solid var(--navy-border); border-right:1px solid var(--navy-border); }
+}
+.chat-shell { display:contents; }
+@media(min-width:520px){ .chat-shell { display:flex; } }
+</style>
+</head>
+<body>
+<div class="chat-shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo-mark">🔥</div>
+    <div class="topbar-title">
+      <h1>Take Your Leap</h1>
+      <span>IJP Career Guide · IndusInd Bank</span>
+    </div>
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="status-dot" id="status-dot"></div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area" id="chat-area" role="log" aria-live="polite"></div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <div class="input-row">
+      <!-- CV Upload button -->
+      <button class="cv-btn" id="cv-btn" title="Upload CV / Resume" aria-label="Upload CV">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        <input type="file" id="cv-file" accept=".pdf,.doc,.docx,.txt" aria-label="Upload CV file">
+      </button>
+      <textarea id="chat-input" rows="1" placeholder="Type anything — I'm listening…" aria-label="Message"></textarea>
+      <button class="send-btn" id="send-btn" aria-label="Send">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════ */
+const KORE_ENDPOINT = 'https://agent-platform.kore.ai/api/v2/apps/aa-5e661d20-c456-4070-b26b-6f7d906e512e/environments/draft/runs/execute';
+const KORE_API_KEY  = 'kg-86189b24-91b5-4885-805c-8e2a6c716bd6.33d4b926-50a0-4c4c-b0c1-2a173cb838e3';
+
+const SESSION_REF = 'ses-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+const USER_REF    = (() => {
+  const k = '__tyl_uid';
+  return sessionStorage.getItem(k) || (() => {
+    const v = 'u-' + Date.now();
+    sessionStorage.setItem(k, v);
+    return v;
+  })();
+})();
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+const S = {
+  step:         0,
+  totalSteps:   9,
+  busy:         false,
+  selectedRole: null,
+  quizActive:   false,
+  quizTotal:    5,
+  quizSeen:     [],
+  quizAnswers:  {},
+  fitScore:     null,
+  confirmed:    false,
+  cvUrl:        null,   // public URL after CV upload
+  cvName:       null,   // original filename
+};
+
+/* ══════════════════════════════════════════
+   DOM
+══════════════════════════════════════════ */
+const $chat  = document.getElementById('chat-area');
+const $input = document.getElementById('chat-input');
+const $send  = document.getElementById('send-btn');
+const $pgbar = document.getElementById('progress-bar');
+const $sdot  = document.getElementById('status-dot');
+
+/* ══════════════════════════════════════════
+   PROGRESS + STATUS
+══════════════════════════════════════════ */
+function setStep(n) {
+  S.step = Math.max(S.step, n);
+  $pgbar.innerHTML = Array.from({length:S.totalSteps},(_,i)=>{
+    const c = i<S.step?'done':i===S.step?'active':'';
+    return `<div class="progress-pill ${c}"></div>`;
+  }).join('');
+}
+setStep(0);
+
+function setStatus(st) {
+  $sdot.style.background = st==='thinking'?'var(--flame)':st==='error'?'#c0392b':'var(--teal)';
+}
+
+/* ══════════════════════════════════════════
+   INPUT
+══════════════════════════════════════════ */
+function lock(ph)  { S.busy=true;  $input.disabled=true;  $input.placeholder=ph||'Please wait…'; $send.disabled=true; }
+function unlock()  { S.busy=false; $input.disabled=false; $input.placeholder="Type anything — I'm listening…"; $send.disabled=false; $input.focus(); }
+function resize()  { $input.style.height='auto'; $input.style.height=Math.min($input.scrollHeight,100)+'px'; }
+const scrollEnd = () => requestAnimationFrame(()=>$chat.scrollTo({top:$chat.scrollHeight,behavior:'smooth'}));
+
+/* ══════════════════════════════════════════
+   MARKDOWN RENDERER
+   Single \n → space. Double \n\n → paragraph.
+══════════════════════════════════════════ */
+function md(raw) {
+  if (!raw) return '';
+  let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+             .replace(/\*\*(.+?)\*\*/gs,'<strong>$1</strong>')
+             .replace(/\*(.+?)\*/gs,'<em>$1</em>')
+             .replace(/`([^`\n]+)`/g,'<code>$1</code>')
+             .replace(/^[\-\*•]\s+(.+)$/gm,'<li>$1</li>');
+  s = s.replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m=>'<ul>'+m+'</ul>');
+  s = s.split(/\n{2,}/).map(b=>{
+    b=b.trim(); if(!b) return '';
+    if(/^<(ul|li)/.test(b)) return b;
+    return '<p>'+b.replace(/\n/g,' ')+'</p>';
+  }).filter(Boolean).join('');
+  return s;
+}
+
+/* ══════════════════════════════════════════
+   DOM BUILDERS
+══════════════════════════════════════════ */
+function sysNotice(txt) {
+  const el=document.createElement('div'); el.className='sys-notice'; el.textContent=txt;
+  $chat.appendChild(el); scrollEnd();
+}
+
+function userBubble(txt) {
+  const row=document.createElement('div'); row.className='message user';
+  row.innerHTML=`<div class="bubble">${md(txt)}</div>`;
+  $chat.appendChild(row); scrollEnd();
+}
+
+function addTyping() {
+  if (document.getElementById('typing')) return;
+  const el=document.createElement('div'); el.className='typing-row'; el.id='typing';
+  el.innerHTML=`<div class="bot-avatar">🔥</div><div class="typing-bbl"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  $chat.appendChild(el); scrollEnd();
+}
+function removeTyping() { document.getElementById('typing')?.remove(); }
+
+function botBubble(accent) {
+  removeTyping();
+  const row=document.createElement('div'); row.className='message bot';
+  const av=document.createElement('div'); av.className='bot-avatar'; av.textContent='🔥';
+  const bbl=document.createElement('div'); bbl.className='bubble'+(accent?' '+accent:'');
+  row.append(av,bbl); $chat.appendChild(row);
+  return {
+    finalize(text) { bbl.innerHTML=md(text||''); scrollEnd(); },
+    el: bbl
+  };
+}
+
+/* ══════════════════════════════════════════
+   KORE API CALL
+══════════════════════════════════════════ */
+async function callAgent(text) {
+  const res = await fetch(KORE_ENDPOINT, {
+    method:'POST',
+    headers:{'x-api-key':KORE_API_KEY,'Content-Type':'application/json'},
+    body: JSON.stringify({
+      sessionIdentity:[
+        {type:'userReference',    value:USER_REF},
+        {type:'sessionReference', value:SESSION_REF}
+      ],
+      input:[{type:'text',content:text}],
+      stream:{enable:true,streamMode:'tokens'},
+      debug:{enable:false}
+    })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  const raw = await res.text();
+  console.log('[Kore raw]', raw);
+  return extractText(raw);
+}
+
+/* Walk every known Kore response shape */
+function extractText(raw) {
+  if (!raw?.trim()) return '';
+  const parts=[];
+  for (const line of raw.split('\n')) {
+    let s=line.trim();
+    if (!s||s==='[DONE]') continue;
+    if (s.startsWith('data:')) s=s.slice(5).trim();
+    if (!s||s==='[DONE]') continue;
+    let obj; try{obj=JSON.parse(s);}catch{continue;}
+    const t=pickText(obj); if(t) parts.push(t);
+  }
+  if (parts.length) return normaliseText(parts.join(' ').replace(/\s{2,}/g,' ').trim());
+  let obj; try{obj=JSON.parse(raw);}catch{return normaliseText(raw);}
+  return normaliseText(pickText(obj)||deepText(obj)||'');
+}
+
+/* ── KEY FIX: convert literal \n sequences → real newlines ──
+   The Kore agent sends "line1\n\nline2\nA ) opt" as a JSON string
+   where \n is the two characters backslash+n, not a real newline.
+   We must unescape them before any regex processing.           */
+function normaliseText(text) {
+  if (!text) return '';
+  let t = text
+    .replace(/\\ n/g, '\n')   // "\ n" with space
+    .replace(/\\n/g,  '\n')   // "\n" standard
+    .replace(/\\t/g,  ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  // ── Fix spurious mid-word spaces inserted by the TTS/LLM tokeniser ──
+  // Pattern: single letter(s) separated by a space from the rest of a word
+  // e.g. "Ind us Ind" → "IndusInd",  "Pro actively" → "Proactively"
+  // "Apolog ies" → "Apologies",  "Conf ident" → "Confident"
+  // Strategy: if a space-separated token is ≤3 chars and surrounded by word chars,
+  // and both neighbours are lowercase or the token is lowercase, merge them.
+  // Run multiple passes to catch chains like "a b c def"
+  for (let pass = 0; pass < 4; pass++) {
+    t = t.replace(/([A-Za-z]{2,})\s([a-z]{1,4})(?=\s[a-z]|\s[A-Z]|[^a-zA-Z]|$)/g, (m, a, b) => {
+      // Don't merge if b looks like a standalone word (common short words)
+      const stopWords = new Set(['a','an','the','in','on','at','to','of','or','is','it','as','be','by','we','he','she','i','do','so','no','up','if','my','me','us','go','mr','ms','dr','hr','id']);
+      if (stopWords.has(b.toLowerCase())) return m;
+      return a + b;
+    });
+    // Also handle: "a B" where the space is between two parts of a proper noun
+    // "Ind us Ind" → after first pass "Indus Ind" → second pass "IndusInd"
+    t = t.replace(/([A-Z][a-z]+)\s([a-z]{1,3})(?=[A-Z])/g, '$1$2');
+  }
+
+  // Specific known bank/domain terms that get split
+  const fixes = [
+    [/Ind\s*us\s*Ind\b/g,      'IndusInd'],
+    [/\bApolog\s*i?es?\b/gi,   'Apologies'],
+    [/\bApolog\s*ize\b/gi,     'Apologize'],
+    [/\bPro\s*actively\b/gi,   'Proactively'],
+    [/\bCon\s*fident\b/gi,     'Confident'],
+    [/\bConf\s*ident(?:ly)?\b/gi, 'Confidently'],
+    [/\bPro\s*fessional(?:ly)?\b/gi, 'Professionally'],
+    [/\bStr\s*ategic(?:ally)?\b/gi,  'Strategically'],
+    [/\bSitu\s*ation(?:al)?\b/gi,    'Situational'],
+    [/\bOrgan\s*iz(?:e|ation)?\b/gi, w => w.replace(/\s/g,'')],
+    [/\bPublic\s*ly\b/gi,      'Publicly'],
+    [/\bCom\s*mun\s*icate?\b/gi, 'Communicate'],
+    [/\bEsc\s*alat(?:e|ion)?\b/gi, w => w.replace(/\s/g,'')],
+    [/\bRec\s*omm?end\b/gi,    'Recommend'],
+    [/\bCollect\s*ively\b/gi,  'Collectively'],
+    [/\bDiscreet\s*ly\b/gi,    'Discreetly'],
+    [/\bFlu\s*ctu\s*ation\b/gi,'Fluctuation'],
+    [/\bCatch\s*ment\b/gi,     'Catchment'],
+    [/\bunder\s*per\s*form\b/gi, 'underperform'],
+    [/\bUnder\s*Per\s*form\b/gi,'Underperform'],
+    [/\bMis\s*-?\s*s(?:ell|old)\b/gi, w => w.replace(/\s/g,'')],
+    [/\bHel\s*p\s*line\b/gi,   'Helpline'],
+    [/\bNPS\s+Score\b/g,        'NPS Score'],
+    [/\bN\s*PS\b/g,             'NPS'],
+    [/\bW\s+ishing\b/gi,        'Wishing'],
+    [/\bW\s+ish\b/gi,           'Wish'],
+    [/\bBl\s*ame\b/gi,          'Blame'],
+    [/\bAn\s*aly\s*z(?:e|ing)\b/gi, w => w.replace(/\s/g,'')],
+    [/\bIm\s*prove\b/gi,        'Improve'],
+    [/\bPer\s*form\b/gi,        'Perform'],
+    [/\bAssess\s*ment\b/gi,     'Assessment'],
+    [/\bman\s*age\s*ment\b/gi,  'management'],
+    [/\bpros\s*pect\s*ing\b/gi, 'prospecting'],
+    [/\bIntens\s*ify\b/gi,      'Intensify'],
+    [/\bPot\s*ential\b/gi,      'Potential'],
+    [/\bOut\s*per\s*form\b/gi,  'Outperform'],
+    [/\bProm\s*oter\b/gi,       'Promoter'],
+  ];
+  for (const [re, rep] of fixes) {
+    t = typeof rep === 'function' ? t.replace(re, rep) : t.replace(re, rep);
+  }
+
+  return t;
+}
+function pickText(o) {
+  if(!o||typeof o!=='object') return '';
+  if(Array.isArray(o.output)){for(const i of o.output){const t=i?.content||i?.text||i?.value||i?.message;if(typeof t==='string'&&t.trim())return t.trim();}}
+  if(o.type==='message'||o.type==='text'){const t=o.content||o.text||o.value;if(typeof t==='string'&&t.trim())return t.trim();}
+  const d=o?.choices?.[0]?.delta?.content;if(typeof d==='string'&&d.trim())return d.trim();
+  const m=o?.choices?.[0]?.message?.content;if(typeof m==='string'&&m.trim())return m.trim();
+  for(const k of['text','content','message','response','reply','answer','result','value','body']){const v=o[k];if(typeof v==='string'&&v.trim())return v.trim();}
+  if(o.data&&typeof o.data==='object'){if(Array.isArray(o.data)){for(const i of o.data){const t=pickText(i);if(t)return t;}}else{for(const k of['content','text','message','response','value']){const v=o.data[k];if(typeof v==='string'&&v.trim())return v.trim();}}}
+  if(Array.isArray(o.results)){for(const r of o.results){const t=pickText(r);if(t)return t;}}
+  if(Array.isArray(o.messages)){for(const m of o.messages){const t=m?.content||m?.text||m?.message;if(typeof t==='string'&&t.trim())return t.trim();}}
+  return '';
+}
+function deepText(o,depth=0){
+  if(depth>8||!o)return '';
+  if(typeof o==='string')return o.trim().length>15?o.trim():'';
+  if(Array.isArray(o)){for(const i of o){const t=deepText(i,depth+1);if(t)return t;}}
+  if(typeof o==='object'){const skip=new Set(['id','type','event','timestamp','sessionId','runId','status','code','error']);for(const[k,v]of Object.entries(o)){if(skip.has(k))continue;const t=deepText(v,depth+1);if(t)return t;}}
+  return '';
+}
+
+/* ══════════════════════════════════════════
+   ── MASTER RESPONSE HANDLER ──
+   Based on exact conversation patterns observed:
+
+   ROLE: "Role Title: X\nLocation: Y\nMatching Percentage: Z%"
+   QUIZ: "1. Trait Name\nQuestion text\nA. opt\nB. opt..."
+         or "Here is your Nth question:\n..."
+   SCORE:"Your overall motivational fit score is N%"
+   CONFIRM: "submitted to HR...will be contacted"
+══════════════════════════════════════════ */
+function parseAndRender(text) {
+  if (!text) return;
+
+  // Priority 1 — Quiz question (A/B/C/D options present + numbered question)
+  if (isQuizQuestion(text)) {
+    renderQuiz(text);
+    return;
+  }
+
+  // Priority 2 — Score (must check before confirmation since both appear in same message)
+  if (isScore(text)) {
+    // Show the text bubble first, then the score ring
+    const cleanTxt = text.trim();
+    botBubble().finalize(cleanTxt);
+    renderScoreRing(text);
+    // If confirmation is also in same message, render that too
+    if (isConfirmation(text) && !S.confirmed) {
+      setTimeout(() => renderConfirmCard(), 800);
+    }
+    return;
+  }
+
+  // Priority 3 — Role recommendation
+  if (isRole(text)) {
+    botBubble().finalize(textWithoutOptions(text));
+    renderRoleCard(text);
+    return;
+  }
+
+  // Priority 4 — Confirmation (standalone)
+  if (isConfirmation(text) && !S.confirmed) {
+    botBubble().finalize(text.trim());
+    renderConfirmCard();
+    return;
+  }
+
+  // Priority 5 — Ineligible
+  if (isIneligible(text)) {
+    botBubble().finalize(text.trim());
+    renderIneligCard();
+    return;
+  }
+
+  // Default — plain text + smart chips
+  botBubble().finalize(text.trim());
+  if (!S.quizActive) showSmartChips(text);
+}
+
+/* ══════════════════════════════════════════
+   DETECTORS  (tuned to actual agent output)
+══════════════════════════════════════════ */
+
+function isQuizQuestion(t) {
+  // Agent sends options as: "A ) text"  "A. text"  "A ) text"  with possible spaces
+  // Need at least 2 of A/B/C/D options anywhere in the text
+  const opts = (t.match(/\b[A-D]\s*[.)]\s*\S.+/gim)||[]);
+  return opts.length >= 2;
+}
+
+function isRole(t) {
+  return /role title\s*:/i.test(t)
+    || /matching percentage\s*:/i.test(t)
+    || (/(?:internal role|open role|available role|role available|suitable.*role)/i.test(t)
+        && /(?:location|matching|match|mumbai|delhi|bangalore|hyderabad|chennai|pune)/i.test(t))
+    || (/(?:senior branch manager|branch manager|relationship manager|regional manager|cluster head)/i.test(t)
+        && /(?:location\s*:|mumbai|delhi|matching percentage|\d+\s*%)/i.test(t));
+}
+
+function isScore(t) {
+  return /you scored\s+\d+\s*%/i.test(t)
+    || /(?:fit score|motivational.*score|overall.*score)\s+(?:is\s+)?\d+\s*%/i.test(t)
+    || /\d+\s*%.*(?:good fit|strong fit|great fit|promising)/i.test(t)
+    || /scored\s+\d+\s*%.*(?:assessment|role|position|strong|good)/i.test(t)
+    || /congratulations.*scored\s+\d+\s*%/i.test(t);
+}
+
+function isConfirmation(t) {
+  return /(?:application|assessment).*submitted.*hr/i.test(t)
+    || /submitted to hr/i.test(t)
+    || /will be contacted.*(?:shortly|soon|next)/i.test(t)
+    || /application.*have been submitted/i.test(t);
+}
+
+function isIneligible(t) {
+  return /(?:not eligible|ineligible|temporary hold|cannot proceed)/i.test(t);
+}
+
+/* ══════════════════════════════════════════
+   QUICK REPLY CHIPS
+══════════════════════════════════════════ */
+function renderChips(options) {
+  document.querySelectorAll('.quick-replies').forEach(e=>e.remove());
+  if (!options?.length) return;
+  const row=document.createElement('div'); row.className='quick-replies';
+  options.forEach(opt=>{
+    const c=document.createElement('button'); c.className='chip'; c.textContent=opt;
+    c.addEventListener('click',()=>{ row.remove(); send(opt); });
+    row.appendChild(c);
+  });
+  $chat.appendChild(row); scrollEnd();
+}
+
+function showSmartChips(t) {
+  // Never show chips during quiz or after completion
+  if (S.quizActive || S.confirmed) return;
+  // Don't show chips if a quiz card is visible
+  if (document.querySelector('.quiz-wrapper')) return;
+
+  const chips =
+    /skill|strength|area|expertise|background/i.test(t)
+      ? ['Leadership & team management','Strategic planning','Customer relationship','Sales & BD','Operations & process']
+    : /role|position|opportunity|interest/i.test(t) && !isRole(t)
+      ? ["I'm interested","Tell me more","Show other roles"]
+    : /prepare|next step|interview|good luck/i.test(t)
+      ? ['Interview tips','How to prepare?','Explore other roles',"I'm good, thanks 🙏"]
+    : /proceed|confirm|start.*quiz|continue.*assessment/i.test(t)
+      ? ["Yes, I'm interested","Tell me more","Show other options"]
+    : [];
+  if (chips.length) renderChips(chips);
+}
+
+/* ══════════════════════════════════════════
+   ROLE CARD
+   Agent format:
+   "Role Title: Senior Branch Manager
+    Location: Mumbai
+    Matching Percentage: 67%
+    Reports To: Regional Head"
+══════════════════════════════════════════ */
+function textWithoutOptions(t) {
+  const firstOpt = t.search(/^\s*[A-D]\s*[.)]/im);
+  return (firstOpt>0 ? t.slice(0,firstOpt) : t).trim();
+}
+
+function renderRoleCard(text) {
+  // ── Title: try structured "Role Title: X" first, then fallback patterns ──
+  let title = text.match(/role title\s*:\s*(.+)/i)?.[1]?.trim();
+
+  if (!title) {
+    // "a suitable internal role available is Senior Branch Manager in Mumbai"
+    title = text.match(/(?:role|position)\s+(?:available\s+)?is\s+([A-Z][A-Za-z\s&–\-]{3,50})(?:\s+in\s|\s+at\s|[.,\n])/i)?.[1]?.trim();
+  }
+  if (!title) {
+    // "a suitable internal role: Senior Branch Manager"
+    title = text.match(/(?:role|position)\s*:\s*([A-Z][A-Za-z\s&–\-]{3,50})(?:\s+in\s|\s+at\s|[.,\n]|$)/i)?.[1]?.trim();
+  }
+  if (!title) {
+    // Known role titles directly mentioned
+    const knownRoles = text.match(/(?:Senior Branch Manager|Branch Manager|Relationship Manager|Regional Sales Manager|Deputy Branch Manager|Cluster Head|Area Sales Manager|Priority Banking Manager)/i);
+    if (knownRoles) title = knownRoles[0];
+  }
+  if (!title) title = 'Open Role';
+
+  // Clean up any trailing noise
+  title = title.replace(/\s+(?:in|at|for|is|are)\s*$/i,'').trim();
+  const location = text.match(/location\s*:\s*(.+)/i)?.[1]?.trim()
+    || text.match(/located (?:in|at)\s+([A-Za-z\s]+?)(?:[.,\n])/i)?.[1]?.trim() || '';
+  const matchPct = text.match(/matching percentage\s*:\s*(\d+)\s*%/i)?.[1]
+    || text.match(/(\d+)\s*%\s*(?:match|fit|compatible)/i)?.[1] || null;
+  const reports  = text.match(/reports? to\s*:\s*(.+)/i)?.[1]?.trim() || '';
+  const dept     = text.match(/department\s*:\s*(.+)/i)?.[1]?.trim() || '';
+
+  // Store selected role
+  S.selectedRole = { title, roleId: 'R'+Date.now()%10000, emoji:'🏦' };
+
+  document.querySelectorAll('.role-cards-wrapper').forEach(e=>e.remove());
+  const wrap=document.createElement('div'); wrap.className='role-cards-wrapper';
+  const card=document.createElement('div'); card.className='role-card';
+
+  const meta=[dept,location,reports?`Reports to: ${reports}`:null].filter(Boolean).join(' · ');
+  const badge = matchPct
+    ? `<div class="match-badge">${matchPct}%</div>`
+    : `<div class="match-badge open">Open</div>`;
+
+  card.innerHTML=`
+    <div class="role-card-top" style="background:var(--flame)"></div>
+    <div class="role-card-body">
+      <div class="role-card-header">
+        <div class="role-title">🏦 ${title}</div>
+        ${badge}
+      </div>
+      ${meta?`<div class="role-meta">${meta}</div>`:''}
+      <div class="role-actions">
+        <button class="btn-watch">▶ Watch JD</button>
+        <button class="btn-interested">I'm Interested</button>
+      </div>
+    </div>`;
+
+  card.querySelector('.btn-watch').addEventListener('click',()=>{
+    send(`Tell me more about the ${title} role`);
+  });
+  card.querySelector('.btn-interested').addEventListener('click',()=>{
+    card.classList.add('selected');
+    wrap.style.pointerEvents='none';
+    setStep(5);
+    send(`I am interested in the ${title} role`);
+  });
+
+  wrap.appendChild(card); $chat.appendChild(wrap); scrollEnd();
+  setStep(4);
+
+  // Show interest chip
+  renderChips([`I'm interested in ${title}`,"Tell me more","Show other roles"]);
+}
+
+/* ══════════════════════════════════════════
+   QUIZ CARD
+   Agent format (two styles observed):
+   Style A: "1 . Leadership Style\n<question>\nA . opt\nB . opt..."
+   Style B: "Here is your Nth question:\n<question>\nA . opt..."
+══════════════════════════════════════════ */
+function renderQuiz(text) {
+  // ── Parse question number ──
+  const numWords={one:1,two:2,three:3,four:4,five:5,
+                  first:1,second:2,third:3,fourth:4,fifth:5,final:5,last:5};
+  let qNum = S.quizSeen.length + 1; // default: next in sequence
+
+  const numM = text.match(/\b(first|second|third|fourth|fifth|final|last|one|two|three|four|five)\b/i)
+    || text.match(/(?:question|q)\s+(?:number\s+)?(\d+)/i)
+    || text.match(/^\s*(\d+)\s*[.)]\s/m);
+
+  if (numM) {
+    const raw = (numM[1]||numM[0]||'').toLowerCase().trim();
+    const parsed = numWords[raw] || parseInt(raw);
+    if (parsed && parsed > 0) qNum = parsed;
+  }
+  // "next" means just increment from last seen
+  if (/\bnext\b/i.test(text.slice(0,80)) && !numM) {
+    qNum = S.quizSeen.length + 1;
+  }
+
+  // ── Detect total questions ──
+  const totalM = text.match(/question\s+\d+\s+of\s+(\d+)/i)||text.match(/(\d+)\s+questions?\s+(?:in|total)/i);
+  if (totalM) S.quizTotal=parseInt(totalM[1]);
+  const isLast = qNum>=S.quizTotal || /\bfinal\b|\blast\b/i.test(text.slice(0,100));
+
+  // ── Parse options ──
+  // Agent sends: "A ) text"  "A. text"  "A) text"
+  // Stop each option before the next letter OR before "Please reply/provide/choose"
+  const optRe = /\b([A-D])\s*[.)]\s*(.+?)(?=\n\s*[A-D]\s*[.)]|\n\n|\bPlease\b|$)/gis;
+  const options = [];
+  let om;
+  while ((om = optRe.exec(text)) !== null) {
+    const opt = om[2]
+      .replace(/\s+/g, ' ')
+      // Strip trailing "Please reply..." that bleeds in
+      .replace(/\s*Please\s+(?:reply|provide|select|choose|answer).+$/i, '')
+      .trim();
+    if (opt && opt.length > 2) options.push(opt);
+  }
+  if (!options.length) { botBubble().finalize(text.trim()); return; }
+
+  // ── Parse question text ──
+  const firstOptPos = text.search(/\b[A-D]\s*[.)]\s*\S/im);
+  const before = firstOptPos>0 ? text.slice(0,firstOptPos).trim() : text;
+  const beforeLines = before.split('\n').map(l=>l.trim()).filter(Boolean);
+
+  let trait = 'Assessment', questionText = '';
+
+  // Style A: starts with "1 . Trait Name"
+  const styleA = before.match(/^\s*\d+\s*[.)]\s*(.+)/m);
+  if (styleA) {
+    trait = styleA[1].trim();
+    const traitLineIdx = beforeLines.findIndex(l=>/^\d+\s*[.)]/.test(l));
+    questionText = beforeLines.slice(traitLineIdx+1).join(' ').trim();
+  } else {
+    // Style B: "Here is your first/next assessment question :"
+    // Question text is everything after the intro line
+    const introIdx = beforeLines.findIndex(l=>
+      /^here is|^this is|^question\s+\d|^assessment question|^here's/i.test(l)
+    );
+    if (introIdx >= 0) {
+      questionText = beforeLines.slice(introIdx+1).join(' ').trim();
+    } else {
+      questionText = beforeLines[beforeLines.length-1] || before;
+    }
+    trait = inferTrait(questionText);
+  }
+  if (!questionText) questionText = 'Please select your answer:';
+
+  // ── Store in quiz state ──
+  if (qNum===1 && !S.quizActive) {
+    S.quizActive=true; S.quizSeen=[]; S.quizAnswers={}; setStep(6);
+  }
+  const qObj={id:qNum, trait, question:questionText, options};
+  const existing=S.quizSeen.findIndex(q=>q.id===qNum);
+  if(existing>=0) S.quizSeen[existing]=qObj; else S.quizSeen.push(qObj);
+
+  // ── Render ──
+  document.querySelectorAll('.quiz-wrapper').forEach(e=>e.remove());
+  const total=S.quizTotal;
+  const hasAns=S.quizAnswers[qNum]!==undefined;
+
+  const pips=Array.from({length:total},(_,i)=>{
+    const c=i<qNum-1?'done':i===qNum-1?'active':'';
+    return `<div class="quiz-pip ${c}"></div>`;
+  }).join('');
+
+  const opts=options.map((opt,i)=>{
+    const l=['A','B','C','D'][i]||i+1;
+    const sel=S.quizAnswers[qNum]===i?'selected':'';
+    return `<button class="quiz-option ${sel}" data-idx="${i}">
+      <span class="option-letter">${l}</span>
+      <span>${opt.replace(/</g,'&lt;')}</span>
+    </button>`;
+  }).join('');
+
+  const wrap=document.createElement('div'); wrap.className='quiz-wrapper';
+  wrap.innerHTML=`<div class="quiz-card">
+    <div class="quiz-header">
+      Q${qNum} of ${total} · ${trait}
+      <div class="quiz-pips">${pips}</div>
+    </div>
+    <div class="quiz-body">
+      <div class="quiz-question">${questionText.replace(/</g,'&lt;')}</div>
+      <div class="quiz-options">${opts}</div>
+      <div class="quiz-nav">
+        <button class="btn-quiz-nav" id="qprev" ${qNum===1?'disabled':''}>← Prev</button>
+        <button class="btn-quiz-nav btn-quiz-next ${hasAns?'active':''}" id="qnext">
+          ${isLast?'Submit ✓':'Next →'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+
+  $chat.appendChild(wrap); scrollEnd();
+
+  // Option click — just highlight, don't re-render entire card
+  wrap.querySelectorAll('.quiz-option').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.dataset.idx);
+      S.quizAnswers[qNum] = idx;
+      // Visual update only — no re-render
+      wrap.querySelectorAll('.quiz-option').forEach(b=>{
+        b.classList.remove('selected');
+        b.querySelector('.option-letter').style.cssText = '';
+      });
+      btn.classList.add('selected');
+      btn.querySelector('.option-letter').style.cssText = 'background:var(--violet);border-color:var(--violet);color:#fff';
+      wrap.querySelector('#qnext').classList.add('active');
+    });
+  });
+
+  // Prev — re-render from cache (no agent call)
+  wrap.querySelector('#qprev').addEventListener('click', ()=>{
+    const prev = S.quizSeen.find(q => q.id === qNum - 1);
+    if (prev) {
+      document.querySelectorAll('.quiz-wrapper').forEach(e=>e.remove());
+      renderQuizCardDirect(prev);
+    }
+  });
+
+  // Next / Submit — SINGLE fire guard
+  let submitted = false;
+  wrap.querySelector('#qnext').addEventListener('click', ()=>{
+    if (submitted || S.quizAnswers[qNum] === undefined) return;
+    submitted = true;
+    const letter = ['A','B','C','D'][S.quizAnswers[qNum]];
+    // Lock the card visually
+    wrap.style.pointerEvents = 'none';
+    wrap.style.opacity = '0.65';
+    // Show user bubble ONCE
+    userBubble(letter);
+    // Send to agent — response will be next question OR score
+    sendQuizAnswer(letter);
+  });
+}
+
+// Rebuild a minimal quiz text string from stored qObj (for Prev navigation)
+function rebuildQuizText(qObj) {
+  const letters = ['A','B','C','D'];
+  return `1. ${qObj.trait}\n${qObj.question}\n${qObj.options.map((o,i)=>`${letters[i]}. ${o}`).join('\n')}`;
+}
+
+// Render a quiz card directly from a cached qObj — no text reparsing
+function renderQuizCardDirect(qObj) {
+  const qNum   = qObj.id;
+  const total  = S.quizTotal || 5;
+  const hasAns = S.quizAnswers[qNum] !== undefined;
+  const isLast = qNum >= total || /\bfinal\b|\blast\b/i.test(qObj.trait||'');
+
+  const pips = Array.from({length:total},(_,i)=>{
+    const c = i<qNum-1?'done':i===qNum-1?'active':'';
+    return `<div class="quiz-pip ${c}"></div>`;
+  }).join('');
+
+  const opts = qObj.options.map((opt,i)=>{
+    const l = ['A','B','C','D'][i]||i+1;
+    const sel = S.quizAnswers[qNum]===i ? 'selected' : '';
+    return `<button class="quiz-option ${sel}" data-idx="${i}">
+      <span class="option-letter" style="${sel?'background:var(--violet);border-color:var(--violet);color:#fff':''}">${l}</span>
+      <span>${opt.replace(/</g,'&lt;')}</span>
+    </button>`;
+  }).join('');
+
+  const wrap = document.createElement('div'); wrap.className = 'quiz-wrapper';
+  wrap.innerHTML = `<div class="quiz-card">
+    <div class="quiz-header">Q${qNum} of ${total} · ${qObj.trait}<div class="quiz-pips">${pips}</div></div>
+    <div class="quiz-body">
+      <div class="quiz-question">${qObj.question.replace(/</g,'&lt;')}</div>
+      <div class="quiz-options">${opts}</div>
+      <div class="quiz-nav">
+        <button class="btn-quiz-nav" id="qprev" ${qNum===1?'disabled':''}>← Prev</button>
+        <button class="btn-quiz-nav btn-quiz-next ${hasAns?'active':''}" id="qnext">${isLast?'Submit ✓':'Next →'}</button>
+      </div>
+    </div>
+  </div>`;
+  $chat.appendChild(wrap); scrollEnd();
+
+  wrap.querySelectorAll('.quiz-option').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=parseInt(btn.dataset.idx);
+      S.quizAnswers[qNum]=idx;
+      wrap.querySelectorAll('.quiz-option').forEach(b=>{b.classList.remove('selected');b.querySelector('.option-letter').style.cssText='';});
+      btn.classList.add('selected');
+      btn.querySelector('.option-letter').style.cssText='background:var(--violet);border-color:var(--violet);color:#fff';
+      wrap.querySelector('#qnext').classList.add('active');
+    });
+  });
+  wrap.querySelector('#qprev').addEventListener('click',()=>{
+    const prev=S.quizSeen.find(q=>q.id===qNum-1);
+    if(prev){document.querySelectorAll('.quiz-wrapper').forEach(e=>e.remove());renderQuizCardDirect(prev);}
+  });
+  let submitted=false;
+  wrap.querySelector('#qnext').addEventListener('click',()=>{
+    if(submitted||S.quizAnswers[qNum]===undefined)return;
+    submitted=true;
+    const letter=['A','B','C','D'][S.quizAnswers[qNum]];
+    wrap.style.pointerEvents='none'; wrap.style.opacity='0.65';
+    userBubble(letter);
+    sendQuizAnswer(letter);
+  });
+}
+
+// Send quiz answer without showing duplicate userBubble
+async function sendQuizAnswer(letter) {
+  if (S.busy) return;
+  lock(); setStatus('thinking'); addTyping();
+  try {
+    const responseText = await callAgent(letter);
+    removeTyping();
+    if (responseText) parseAndRender(responseText);
+    else sysNotice('No response — please try again');
+  } catch(err) {
+    removeTyping();
+    console.error('[Agent error]', err);
+    botBubble('accent-gold').finalize(`⚠️ ${err.message}`);
+    setStatus('error');
+  } finally {
+    setStatus('ready'); unlock();
+  }
+}
+
+function inferTrait(q) {
+  const t=[
+    [/team|under.?perform|coach|motivation|staff/i,      'People Leadership'],
+    [/market share|sales|cold call|growth|revenue/i,      'Market & Business Growth'],
+    [/customer|dissatisfied|complaint|product.*suit/i,    'Customer Focus'],
+    [/incorrect|promise|mistake|account|ownership/i,      'Ownership & Accountability'],
+    [/NPS|net promot|root cause|decline|score/i,          'Business Acumen'],
+    [/strateg|plan|priority|quarter|direction/i,          'Strategic Thinking'],
+  ];
+  for (const [re,label] of t) if (re.test(q)) return label;
+  return `Q${S.quizSeen.length+1}`;
+}
+
+/* ══════════════════════════════════════════
+   SCORE RING
+   Agent: "Your overall motivational fit score
+           is 64%, categorized as a Good Fit."
+══════════════════════════════════════════ */
+function renderScoreRing(text) {
+  // Parse score
+  const m = text.match(/you scored\s+(\d+)\s*%/i)
+    || text.match(/(?:fit score|motivational.*score|overall.*score)\s+(?:is\s+)?(\d+)\s*%/i)
+    || text.match(/scored\s+(\d+)\s*%/i)
+    || text.match(/(\d+)\s*%.*(?:strong fit|good fit|great fit|promising)/i)
+    || text.match(/score\s+(?:of\s+)?(\d+)\s*%/i);
+  const score = m ? parseInt(m[1]) : 70;
+  S.fitScore  = score;
+  S.quizActive = false;
+
+  const label = score>=80?'Strong Fit 🟢':score>=65?'Good Fit 🟡':'Promising 🔵';
+  const COLORS=['#98272A','#6B3A7D','#C8922A','#D4A843'];
+
+  // Build trait scores from quiz answers (slightly varied around total)
+  const traitNames = S.quizSeen.length>=4
+    ? S.quizSeen.slice(0,4).map(q=>q.trait)
+    : ['Leadership','Strategic Thinking','Customer Focus','Business Acumen'];
+  const traits=traitNames.map((name,i)=>{
+    const variance=[+8,+3,+5,-7][i]||0;
+    return {name, score:Math.min(100,Math.max(35,score+variance)), color:COLORS[i]};
+  });
+
+  document.querySelectorAll('.fit-score-wrapper').forEach(e=>e.remove());
+  const circ=2*Math.PI*34;
+  const wrap=document.createElement('div'); wrap.className='fit-score-wrapper';
+  wrap.innerHTML=`<div class="fit-score-card">
+    <div class="score-ring-container">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#2A2535" stroke-width="8"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#C8922A" stroke-width="8"
+          stroke-linecap="round"
+          stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+          transform="rotate(-90 40 40)" id="score-arc"/>
+      </svg>
+      <div class="score-label-group">
+        <div class="score-number" id="score-num">0%</div>
+        <div class="score-label">${label}</div>
+        <div class="score-role">for ${S.selectedRole?.title||'the role'}</div>
+      </div>
+    </div>
+    <div class="trait-bars">
+      ${traits.map(t=>`<div class="trait-row">
+        <span class="trait-name">${t.name}</span>
+        <div class="trait-track"><div class="trait-fill" style="background:${t.color}" data-score="${t.score}"></div></div>
+        <span class="trait-pct" style="color:${t.color}">${t.score}%</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn-submit-profile" id="submit-btn">Confirm My Application 🚀</button>
+  </div>`;
+
+  $chat.appendChild(wrap); scrollEnd(); setStep(8);
+
+  // Animate ring + bars
+  setTimeout(()=>{
+    const arc=document.getElementById('score-arc');
+    const numEl=document.getElementById('score-num');
+    if(arc){arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)';arc.style.strokeDashoffset=circ*(1-score/100);}
+    let cur=0;
+    const iv=setInterval(()=>{cur=Math.min(cur+2,score);if(numEl)numEl.textContent=cur+'%';if(cur>=score)clearInterval(iv);},24);
+    setTimeout(()=>{wrap.querySelectorAll('.trait-fill').forEach(b=>{b.style.width=b.dataset.score+'%';});},1100);
+  },300);
+
+  // Submit button
+  document.getElementById('submit-btn').addEventListener('click',()=>{
+    const btn=document.getElementById('submit-btn');
+    btn.disabled=true; btn.textContent='Submitting…';
+    setStep(9);
+    // Agent already confirmed submission — just acknowledge
+    renderConfirmCard();
+  });
+}
+
+/* ══════════════════════════════════════════
+   CONFIRM CARD
+══════════════════════════════════════════ */
+function renderConfirmCard() {
+  if (S.confirmed) return;
+  S.confirmed = true;
+  const ref='IJP-2025-'+Math.floor(Math.random()*9000+1000);
+  const card=document.createElement('div'); card.className='confirm-card';
+  card.innerHTML=`
+    <strong>📨 Application Submitted</strong><br>
+    Role: <strong>${S.selectedRole?.title||'—'}</strong><br>
+    Status: <strong style="color:var(--teal)">✅ Submitted to HR</strong><br>
+    Ref: <span class="ref">${ref}</span><br>
+    <span style="font-size:11px;color:var(--t3);margin-top:4px;display:block">
+      You will be contacted within 2–3 working days
+    </span>`;
+  $chat.appendChild(card); setStep(9); scrollEnd();
+  setTimeout(()=>renderChips(['How to prepare?','Interview tips','Explore other roles',"I'm good, thanks 🙏"]),700);
+}
+
+/* ══════════════════════════════════════════
+   INELIG CARD
+══════════════════════════════════════════ */
+function renderIneligCard() {
+  const card=document.createElement('div'); card.className='inelig-card';
+  card.innerHTML=`<div class="inelig-rows">
+    <div class="inelig-row fail"><span class="inelig-icon">⚠️</span><span class="inelig-text">Temporary hold on IJP access</span></div>
+    <div class="inelig-row"><span class="inelig-icon">ℹ️</span><span class="inelig-text">Contact your HRBP to resolve</span></div>
+  </div>`;
+  $chat.appendChild(card); scrollEnd();
+  renderChips(['How to resolve?','Connect with HRBP','Prep meanwhile?']);
+}
+
+/* ══════════════════════════════════════════
+   SEND — core loop (for non-quiz messages)
+══════════════════════════════════════════ */
+async function send(text) {
+  text = text.trim();
+  if (!text || S.busy) return;
+
+  // Disable stale chips and role cards only
+  document.querySelectorAll('.quick-replies,.role-cards-wrapper').forEach(el=>{
+    el.style.pointerEvents='none'; el.style.opacity='0.5';
+  });
+
+  userBubble(text);
+  lock(); setStatus('thinking'); addTyping();
+
+  try {
+    const responseText = await callAgent(text);
+    removeTyping();
+    if (responseText) parseAndRender(responseText);
+    else sysNotice('No response — please try again');
+  } catch(err) {
+    removeTyping();
+    console.error('[Agent error]', err);
+    botBubble('accent-gold').finalize(`⚠️ ${err.message}`);
+    setStatus('error');
+  } finally {
+    setStatus('ready'); unlock();
+  }
+}
+
+/* ══════════════════════════════════════════
+   INPUT EVENTS
+══════════════════════════════════════════ */
+$send.addEventListener('click',()=>{ const v=$input.value; $input.value=''; resize(); send(v); });
+$input.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); const v=$input.value; $input.value=''; resize(); send(v); }
+});
+$input.addEventListener('input',resize);
+
+/* ══════════════════════════════════════════
+   CV UPLOAD
+   Uploads to 0x0.st (free public file host)
+   → gets back a public URL
+   → sends URL to Kore agent
+══════════════════════════════════════════ */
+document.getElementById('cv-file').addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  // Reset input so same file can be re-uploaded
+  e.target.value = '';
+
+  const MAX_MB = 10;
+  if (file.size > MAX_MB * 1024 * 1024) {
+    sysNotice(`⚠ File too large (max ${MAX_MB}MB)`);
+    return;
+  }
+
+  // Show uploading pill in chat
+  const pill = document.createElement('div');
+  pill.className = 'cv-pill';
+  pill.innerHTML = `
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    <span>Uploading <strong>${file.name}</strong>…</span>`;
+  $chat.appendChild(pill); scrollEnd();
+
+  const $cvBtn = document.getElementById('cv-btn');
+  $cvBtn.disabled = true;
+
+  try {
+    // Upload to 0x0.st — free anonymous file host, returns URL as plain text
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadRes = await fetch('https://0x0.st', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!uploadRes.ok) throw new Error(`Upload failed: HTTP ${uploadRes.status}`);
+
+    const cvUrl = (await uploadRes.text()).trim();
+    if (!cvUrl.startsWith('http')) throw new Error('Invalid URL returned from upload service');
+
+    // Update pill to show success
+    pill.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span><strong>${file.name}</strong> uploaded · <a href="${cvUrl}" target="_blank" style="color:var(--teal);text-decoration:underline">View</a></span>`;
+
+    // Store in state for reference
+    S.cvUrl = cvUrl;
+    S.cvName = file.name;
+
+    // Send URL to agent as a user message
+    const msg = `I have uploaded my CV. Here is the link: ${cvUrl} (File: ${file.name})`;
+    userBubble(`📄 CV uploaded: ${file.name}`);
+    // Send to agent without showing another userBubble
+    lock(); setStatus('thinking'); addTyping();
+    try {
+      const resp = await callAgent(msg);
+      removeTyping();
+      if (resp) parseAndRender(resp);
+    } catch(err) {
+      removeTyping();
+      botBubble('accent-gold').finalize(`⚠️ ${err.message}`);
+      setStatus('error');
+    } finally {
+      setStatus('ready'); unlock();
+    }
+
+  } catch(err) {
+    console.error('[CV Upload]', err);
+    pill.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D44B4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span style="color:#D44B4E">Upload failed: ${err.message}</span>`;
+    // Fallback: ask user to paste URL manually
+    sysNotice('Tip: paste your CV link directly in the chat if upload fails');
+  } finally {
+    $cvBtn.disabled = false;
+  }
+});
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+(async()=>{
+  sysNotice('Session started · '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}));
+  setStep(1); lock('Connecting…'); setStatus('thinking'); addTyping();
+  try {
+    const r = await callAgent('Hi');
+    removeTyping();
+    if (r) parseAndRender(r);
+    else {
+      botBubble().finalize("Hey! 👋 I'm Take Your Leap — your personal career guide at IndusInd Bank. What's been on your mind lately?");
+      renderChips(['Looking for a role change','Explore leadership roles',"What's open for me?",'Just browsing']);
+    }
+  } catch(e) {
+    removeTyping(); console.warn('[Init]',e);
+    botBubble().finalize("Hey! 👋 I'm Take Your Leap — your personal career guide at IndusInd Bank. What's been on your mind lately?");
+    renderChips(['Looking for a role change','Explore leadership roles',"What's open for me?",'Just browsing']);
+  } finally { setStatus('ready'); unlock(); }
+})();
+</script>
+</body>
+</html>
